@@ -1,0 +1,16 @@
+<adapter-config name="PollCACHFiles" adapter="file" wsdlLocation="../WSDLs/PollCACHFiles.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory UIincludeWildcard="*.270|*.276" location="eis/HAFileAdapter"/>
+  <endpoint-activation portType="Read_ptt" operation="Read">
+    <activation-spec className="oracle.tip.adapter.file.inbound.FileActivationSpec">
+      <property name="LogicalDirectory" value="CACH_DIR"/>
+      <property name="UseHeaders" value="false"/>
+      <property name="MinimumAge" value="10"/>
+      <property name="Recursive" value="true"/>
+      <property name="PollingFrequency" value="10"/>
+      <property name="DeleteFile" value="false"/>
+      <property name="IncludeFiles" value=".*\.270|.*\.276"/>
+    </activation-spec>
+  </endpoint-activation>
+
+</adapter-config>

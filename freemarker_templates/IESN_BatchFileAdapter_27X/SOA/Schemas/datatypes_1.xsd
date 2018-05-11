@@ -1,0 +1,474 @@
+<?xml version= '1.0' encoding= 'UTF-8' ?>
+<xsd:schema targetNamespace="http://hphc.org/schema/datatypes/v2" elementFormDefault="qualified"
+     attributeFormDefault="unqualified" version="2" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:tns="http://hphc.org/schema/datatypes/v2" xmlns:vocabulary="http://hphc.org/schema/vocabulary/v2">
+    <xsd:import namespace="http://hphc.org/schema/vocabulary/v2" schemaLocation="vocabulary_1.xsd"/>
+    <xsd:complexType name="idType">
+        <xsd:annotation>
+            <xsd:documentation>This class is used to define the a standard Id type of</xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="idSource" type="vocabulary:applicationCodeType" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Source system of ID</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="effDate" type="tns:dateFormatType" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Date when ID is effective</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="endDate" type="tns:dateFormatType" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Date when ID expires</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="type" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Type of the ID like Provider ID, NPI ID, Member ID etc.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="valueType">
+        <xsd:annotation>
+            <xsd:documentation>This class is used to define value for elements where values need to be further qualified by code that maps to the value of the element, type of the value and source systems of the value, type and codes</xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="index" type="xsd:integer" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Sequencing in relation to a list</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="id" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>ID associated to the value</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="idSource" type="vocabulary:applicationCodeType">
+                    <xsd:annotation>
+                        <xsd:documentation>Source system for the ID</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="code" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Value of the Codes such as ICD9, CPT etc.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="codeSource" type="vocabulary:applicationCodeType" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Source system for Code</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="type" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Type of the Code</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="typeSource" type="vocabulary:applicationCodeType" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Source system for type</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="valueSource" type="vocabulary:applicationCodeType" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Source system for description of Code</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    <xsd:complexType name="locationType">
+        <xsd:annotation>
+            <xsd:documentation>This class is used to define the address</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Contact Name</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="addressLines" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Street Address. PO Box etc</xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="addressLine" maxOccurs="3">
+                            <xsd:annotation>
+                                <xsd:documentation>Address Line</xsd:documentation>
+                            </xsd:annotation>
+                            <xsd:complexType>
+                                <xsd:simpleContent>
+                                    <xsd:extension base="xsd:string">
+                                        <xsd:attribute name="index" type="xsd:integer"/>
+                                    </xsd:extension>
+                                </xsd:simpleContent>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="apartmentIndicator" type="vocabulary:ynEnumType" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Indicator whether this this is an apartment address.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="cityName" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Name of the City</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="countyName" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Name of t he County</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="stateCode" type="xsd:string" nillable="true" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Two Character US State Code</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="stateName" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Name of state</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="postalCode" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Postal Code</xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:maxLength value="10"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="postalExtensionCode" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>4-digit suffix from US zip+4 postal code</xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:length value="4"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="countryCode" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>ISO 3 character International Country Code as defined in ISO 3166 specification</xsd:documentation>
+                </xsd:annotation>
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                        <xsd:minLength value="2"/>
+                        <xsd:maxLength value="4"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="countryName" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Name of the Country</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="geoCode" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Geo Code</xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="latitude">
+                            <xsd:annotation>
+                                <xsd:documentation>Geographical Latitude</xsd:documentation>
+                            </xsd:annotation>
+                            <xsd:simpleType>
+                                <xsd:restriction base="xsd:string">
+                                    <xsd:pattern value="(-?[0-8]?[0-9](\.\d*)?)|-?90(\.[0]*)?"/>
+                                </xsd:restriction>
+                            </xsd:simpleType>
+                        </xsd:element>
+                        <xsd:element name="longitude">
+                            <xsd:annotation>
+                                <xsd:documentation>Geographic Longitude</xsd:documentation>
+                            </xsd:annotation>
+                            <xsd:simpleType>
+                                <xsd:restriction base="xsd:string">
+                                    <xsd:pattern value="(-?([1]?[0-7][1-9]|[1-9]?[0-9])?(\.\d*)?)|-?180(\.[0]*)?"/>
+                                </xsd:restriction>
+                            </xsd:simpleType>
+                        </xsd:element>
+                        <xsd:element name="areaKey" minOccurs="0">
+                            <xsd:annotation>
+                                <xsd:documentation>US Census FIPS Area Key
+																Digits 1-2 = State code 
+																Digits 3-5 = County code
+																Digits 6-11 = Census Tract code
+																(often used with a decimal point:xxxx.xx) 
+																Digit 12 = Blockgroup code</xsd:documentation>
+                            </xsd:annotation>
+                            <xsd:simpleType>
+                                <xsd:restriction base="xsd:string">
+                                    <xsd:length value="12"/>
+                                </xsd:restriction>
+                            </xsd:simpleType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="communicationChannels" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>List of Channels to contact Person, Organization etc.</xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="communicationChannel" type="tns:communicationChannelType" maxOccurs="unbounded">
+                            <xsd:annotation>
+                                <xsd:documentation>Channels to contact a Person, Organization, etc.</xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="locationUseType" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>List of one or more tokens:
+“PRIMARY”, “BILL_TO”, “BUSINESS”, “OTHER”, “SHIP_TO”, “GROUP_PRACTICE”</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="effDate" type="tns:dateFormatType">
+            <xsd:annotation>
+                <xsd:documentation>Effective Date for Location</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="endDate" type="tns:dateFormatType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>End date for Location</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="valueSource" type="vocabulary:applicationCodeType">
+            <xsd:annotation>
+                <xsd:documentation>Source system for location</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="communicationChannelType">
+        <xsd:annotation>
+            <xsd:documentation>Type of communication channel - PHONE, EMAIL, WEB...</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="countryCode" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Country code for an international Phone or Fax number</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="digitalAddress" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Email, Fax or Phone number</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="phoneExtension" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Phone extension</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="type" type="vocabulary:communicationType">
+            <xsd:annotation>
+                <xsd:documentation>Communication channel type like Phone, Email, Fax etc.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="location" type="vocabulary:locationType">
+            <xsd:annotation>
+                <xsd:documentation>Location of the communication channel</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="preference">
+            <xsd:annotation>
+                <xsd:documentation>Channel preference priority</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:integer"/>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="restriction" type="vocabulary:ynEnumType">
+            <xsd:annotation>
+                <xsd:documentation>Flag to indicate if channel is restricted</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="personNameType">
+        <xsd:annotation>
+            <xsd:documentation>This class is used to convey a person&apos;s name</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="affixes" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Contains the list of remaining parts of the PersonName</xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="affix" maxOccurs="unbounded">
+                            <xsd:annotation>
+                                <xsd:documentation>Contains the remaining parts of the PersonName as defined by the type attribute.</xsd:documentation>
+                            </xsd:annotation>
+                            <xsd:complexType>
+                                <xsd:simpleContent>
+                                    <xsd:extension base="xsd:string">
+                                        <xsd:attribute name="type">
+                                            <xsd:annotation>
+                                                <xsd:documentation>Defines the context for the affix.			type=aristocraticTitle.
+e.g. Baron, Graf, Earl, etc.
+type=formOfAddress. 
+Contains the Salutation, 
+e.g. Mr., Mrs., Hon., Dr., Major, etc.
+type=generation.
+e.g. Sr., Jr., III (the third), etc.
+type=qualification.
+Contains the letters used to describe academic or other type qualifications held by a person and/or the distinctions conferred upon them. e.g. PhD, MD, CPA, MCSD, etc.</xsd:documentation>
+                                            </xsd:annotation>
+                                            <xsd:simpleType>
+                                                <xsd:restriction base="xsd:string">
+                                                    <xsd:enumeration value="aristocraticTitle"/>
+                                                    <xsd:enumeration value="formOfAddress"/>
+                                                    <xsd:enumeration value="generation"/>
+                                                    <xsd:enumeration value="qualification"/>
+                                                </xsd:restriction>
+                                            </xsd:simpleType>
+                                        </xsd:attribute>
+                                    </xsd:extension>
+                                </xsd:simpleContent>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="firstName" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Contains the first or chosen name. Also known as a person&apos;s given name</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="middleName" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Contains a person&apos;s middle name or initial</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="lastNames" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Contains the non-chosen or inherited name. Also known as a person&apos;s famly name. The order is implied by the order of appearance of the last name elements in the XML document</xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="lastName" minOccurs="0" maxOccurs="unbounded">
+                            <xsd:annotation>
+                                <xsd:documentation>list of last names</xsd:documentation>
+                            </xsd:annotation>
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="prefix" type="xsd:string" minOccurs="0">
+                                        <xsd:annotation>
+                                            <xsd:documentation>The aristocratic or other prefix for last name
+[Example(s): de (as in de Witt), la (as in la Salle); van (as in van der Voss). ]</xsd:documentation>
+                                        </xsd:annotation>
+                                    </xsd:element>
+                                    <xsd:element name="name" type="xsd:string" minOccurs="0">
+                                        <xsd:annotation>
+                                            <xsd:documentation>last name</xsd:documentation>
+                                        </xsd:annotation>
+                                    </xsd:element>
+                                </xsd:sequence>
+                                <xsd:attribute name="primary" type="vocabulary:ynEnumType">
+                                    <xsd:annotation>
+                                        <xsd:documentation>Defines the order when multiple last names are used.
+primary=”Y” Specifies that this occurrence of last name is primary. It would appear first when multiple last names are used.
+primary=”N” Specifies that this occurrence of last name is not primary.  It would appear after the primary last name. When multiple ‘N’ primary last names are used, the order is implied.</xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:attribute>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="formattedName" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Contains, in one string, a fully formatted name with all of its pieces in their proper place. 
+[BusinessRule(s): This includes all of the necessary punctuation. This de-normalized form of the name cannot be easily parsed]</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="preferredGivenName" type="xsd:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Contains the chosen name by which the person prefers to be addressed. Note: This name may be a name other than a given name, such as a nickname</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="valueSource" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>Source system for Person Name</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+<!-- 07/20/2010 Adding a new value type for a list on the code set. This is inline with the implementation of a decoding framework utility
+-->
+    <xsd:complexType name="decodeValueType">
+        <xsd:annotation>
+            <xsd:documentation>This class is used to define value for elements that are included as part of the decode implementation. The elements will be mapped from the output of the common decoding framework utility</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="code" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>Value of the Codes</xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:simpleContent>
+                        <xsd:extension base="xsd:string">
+                            <xsd:attribute name="index" type="xsd:integer">
+                                <xsd:annotation>
+                                    <xsd:documentation>Sequencing in relation to a list</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:attribute>
+                            <xsd:attribute name="type" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:documentation>Type of the Code which indicates this is a HPHC, HIPAA, HPI, NEHEN code</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:attribute>
+                            <xsd:attribute name="subType" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:documentation>Sub Type of the Code, for example, REV, CPT4, ICT9, HCPCS etc.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:attribute>
+                            <xsd:attribute name="description" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:documentation>Description of the code</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:attribute>
+                            <xsd:attribute name="source" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:documentation>Source system for the code. In most cases this should be represented as database.tablename</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:attribute>
+                        </xsd:extension>
+                    </xsd:simpleContent>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+<!-- end of 07/20/2010 addition for a new value type
+-->
+    <xsd:simpleType name="urlType">
+        <xsd:annotation>
+            <xsd:documentation>This class is used to define a URL</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:anyURI"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="dateFormatType">
+        <xsd:annotation>
+            <xsd:documentation>Date format YYYY-MM-DD</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:date"/>
+    </xsd:simpleType>
+</xsd:schema>
+<!-- edited with XMLSpy v2012 rel. 2 (x64) (http://www.altova.com) by Jesha Robson (Harvard Pilgrim HealthCare) -->

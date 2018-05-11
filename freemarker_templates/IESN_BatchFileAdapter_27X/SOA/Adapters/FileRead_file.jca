@@ -1,0 +1,12 @@
+<adapter-config name="FileRead" adapter="file" wsdlLocation="../WSDLs/FileRead.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory location="eis/HAFileAdapter"/>
+  <endpoint-interaction portType="SynchRead_ptt" operation="SynchRead">
+    <interaction-spec className="oracle.tip.adapter.file.outbound.FileReadInteractionSpec">
+      <property name="LogicalDirectory" value="FILE_DIR"/>
+      <property name="FileName" value="FILENAME"/>
+      <property name="DeleteFile" value="true"/>
+    </interaction-spec>
+  </endpoint-interaction>
+
+</adapter-config>

@@ -1,0 +1,13 @@
+<adapter-config name="BusinessArchive" adapter="file" wsdlLocation="../WSDLs/BusinessArchive.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory location="eis/HAFileAdapter"/>
+  <endpoint-interaction portType="Write_ptt" operation="Write">
+    <interaction-spec className="oracle.tip.adapter.file.outbound.FileInteractionSpec">
+      <property name="NumberMessages" value="1"/>
+      <property name="Append" value="false"/>
+      <property name="FileNamingConvention" value="po_%SEQ%.txt"/>
+      <property name="LogicalDirectory" value="BIZARC_DIR"/>
+    </interaction-spec>
+  </endpoint-interaction>
+
+</adapter-config>

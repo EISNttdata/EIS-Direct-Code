@@ -1,0 +1,648 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Thu Aug 25 18:30:31 IST 2016
+  Author:  rgangesh
+  Type: BPEL 2.0 Process
+  Purpose: One Way BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="InboundBatchFileAdapter"
+               targetNamespace="http://xmlns.oracle.com/ServiceBusApplication/IESN_BatchFileAdapter_27X/InboundBatchFileAdapter"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://xmlns.oracle.com/ServiceBusApplication/IESN_BatchFileAdapter_27X/InboundBatchFileAdapter"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+               xmlns:ui="http://xmlns.oracle.com/soa/designer"
+               xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns1="http://xmlns.oracle.com/pcbpel/adapter/file/ServiceBusApplication/IESN_BatchFileAdapter_27X/GetNewFilesList"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:oraext="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc"
+         xmlns:bpm="http://xmlns.oracle.com/bpmn20/extensions"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:ess="http://xmlns.oracle.com/scheduler" xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:dvm="http://www.oracle.com/XSL/Transform/java/oracle.tip.dvm.LookupValue"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xdk="http://schemas.oracle.com/bpel/extension/xpath/function/xdk"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:ns2="http://xmlns.oracle.com/pcbpel/adapter/file/ServiceBusApplication/IESN_BatchFileAdapter_27X/FileRead"
+         xmlns:ns3="http://xmlns.oracle.com/pcbpel/adapter/file/ServiceBusApplication/IESN_BatchFileAdapter_27X/FileArchive"
+         xmlns:ns4="http://xmlns.oracle.com/pcbpel/adapter/file/ServiceBusApplication/IESN_BatchFileAdapter_27X/BusinessArchive"
+         xmlns:ns5="http://xmlns.oracle.com/pcbpel/adapter/file/ServiceBusApplication/IESN_BatchFileAdapter_27X/XEInbound"
+         xmlns:ns6="http://xmlns.oracle.com/pcbpel/adapter/opaque/"
+         xmlns:ns7="http://xmlns.oracle.com/pcbpel/adapter/db/ServiceBusApplication/IESN_BatchFileAdapter_27X/WriteToDB"
+         xmlns:ns8="http://xmlns.oracle.com/pcbpel/adapter/db/top/WriteToDB"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:ns9="http://xmlns.oracle.com/pcbpel/adapter/file/ServiceBusApplication/IESN_BatchFileAdapter_27X/WriteMetaFile"
+         xmlns:ns10="http://xmlns.oracle.com/ServiceBusApplication/IESN_BatchFileAdapter_27X/MetaFile"
+         xmlns:ns11="http://xmlns.oracle.com/pcbpel/demoSchema/csv"
+         xmlns:ns12="http://xmlns.oracle.com/pcbpel/adapter/file/SOAApplication/IESN_BatchFileAdapter_27X/ReadFTAMetaFile"
+         xmlns:ns13="http://xmlns.oracle.com/SOAApplication/IESN_BatchFileAdapter_27X/FTAMetaFile"
+         xmlns:ns14="http://www.srimant.com/employees"
+         xmlns:ns15="http://xmlns.oracle.com/pcbpel/adapter/file/SOAApplication/IESN_BatchFileAdapter_27X/ArchFTAMetaFile"
+         xmlns:ns16="http://xmlns.oracle.com/pcbpel/adapter/file/ServiceBusApplication/IESN_BatchFileAdapter_27X/PollNewFiles"
+         xmlns:ns17="http://xmlns.oracle.com/pcbpel/adapter/file/SOAApplication/IESN_BatchFileAdapter_27X/PollCACHFiles"
+         xmlns:ns18="http://hphc.org/common/wsdl/ServiceMonitor/V1" xmlns:ns20="http://hphc.org/schema/common/v2"
+         xmlns:ns19="http://hphc.org/schema/service-monitor/v1">
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/file/ServiceBusApplication/IESN_BatchFileAdapter_27X/GetNewFilesList"
+          location="../WSDLs/GetNewFilesList.wsdl" importType="http://schemas.xmlsoap.org/wsdl/" ui:processWSDL="true"/>
+  <import namespace="http://www.srimant.com/employees" location="../Schemas/FTAMetaFile.xsd"
+          importType="http://www.w3.org/2001/XMLSchema"/>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  --> 
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="GetNewFilesList" partnerLinkType="ns1:FileListing_plt" partnerRole="FileListing_role"/>
+    <partnerLink name="FileRead" partnerLinkType="ns2:SynchRead_plt" partnerRole="SynchRead_role"/>
+    <partnerLink name="FileArchive" partnerLinkType="ns3:Write_plt" partnerRole="Write_role"/>
+    <partnerLink name="BusinessArchive" partnerLinkType="ns4:Write_plt" partnerRole="Write_role"/>
+    <partnerLink name="XEInbound" partnerLinkType="ns5:Write_plt" partnerRole="Write_role"/>
+    <partnerLink name="WriteToDB" partnerLinkType="ns7:WriteToDB_plt" partnerRole="WriteToDB_role"/>
+    <partnerLink name="WriteMetaFile" partnerLinkType="ns9:Write_plt" partnerRole="Write_role"/>
+    <partnerLink name="ReadFTAMetaFile" partnerLinkType="ns12:SynchRead_plt" partnerRole="SynchRead_role"/>
+    <partnerLink name="ArchFTAMetaFile" partnerLinkType="ns15:Write_plt" partnerRole="Write_role"/>
+    <partnerLink name="PollNewFiles" partnerLinkType="ns16:Read_plt" myRole="Read_role"/>
+    <partnerLink name="PollCACHFiles" partnerLinkType="ns17:Read_plt" myRole="Read_role"/>
+    <partnerLink name="SVCMonitoring" partnerLinkType="ns18:SVCMonitoring" partnerRole="ServiceMonitoringPort"/>
+  </partnerLinks>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <variable name="InvokeGetNewFileList_FileListing_InputVariable" messageType="ns1:Empty_msg"/>
+    <variable name="InvokeGetNewFileList_FileListing_OutputVariable" messageType="ns1:FileListing_msg"/>
+    <variable name="FileCount" type="xsd:int"/>
+    <variable name="TotalCount" type="xsd:int"/>
+    <variable name="InvokeFileRead_SynchRead_InputVariable" messageType="ns2:Empty_msg"/>
+    <variable name="InvokeFileRead_SynchRead_OutputVariable" messageType="ns2:SynchRead_msg"/>
+    <variable name="Filename" type="xsd:string"/>
+    <variable name="Directory" type="xsd:string"/>
+    <variable name="InvokeFileArchive_Write_InputVariable" messageType="ns3:Write_msg"/>
+    <variable name="ArchFilename" type="xsd:string"/>
+    <variable name="ArchDirectory" type="xsd:string"/>
+    <variable name="InvokeBusinessArchive_Write_InputVariable" messageType="ns4:Write_msg"/>
+    <variable name="InvokeXEInbound_Write_InputVariable" messageType="ns5:Write_msg"/>
+    <variable name="BusinessArchiveDir" type="xsd:string"/>
+    <variable name="XEFilename" type="xsd:string"/>
+    <variable name="TrackingId" type="xsd:string"/>
+    <variable name="ArchiveRename" type="xsd:string"/>
+    <variable name="Xtension" type="xsd:string"/>
+    <variable name="Error" type="xsd:string"/>
+    <variable name="MetaFileName" type="xsd:string"/>
+    <variable name="MetaFileXtension" type="xsd:string"/>
+    <variable name="InvokeMetaFile_Write_InputVariable" messageType="ns9:Write_msg"/>
+    <variable name="PayLoadType" type="xsd:string"/>
+    <variable name="Channel" type="xsd:string"/>
+    <variable name="FTAMetaFileXtension" type="xsd:string"/>
+    <variable name="AccessId" type="xsd:string"/>
+    <variable name="InvokeReadFTAMF_SynchRead_InputVariable" messageType="ns12:Empty_msg"/>
+    <variable name="InvokeReadFTAMF_SynchRead_OutputVariable" messageType="ns12:SynchRead_msg"/>
+    <variable name="AccessIdNum" type="xsd:string"/>
+    <variable name="InvokeArchFTAMF_Write_InputVariable" messageType="ns15:Write_msg"/>
+    <variable name="ChannelType" type="xsd:string"/>
+    <variable name="TransactionType" type="xsd:string"/>
+    <variable name="InvokeDBWrite_insert_InputVariable" messageType="ns7:EdiBatchFilesCollection_msg"/>
+    <variable name="OnMessage_Read_InputVariable" messageType="ns16:Read_msg"/>
+    <variable name="OnMessage_Read_InputVariable_CACH" messageType="ns17:Read_msg"/>
+    <variable name="RootDirectory" type="xsd:string"/>
+    <variable name="Gateway" type="xsd:string"/>
+    <variable name="InvokeSVCMonitor_SvcMonitor_InputVariable" messageType="ns18:requestMessage"/>
+  </variables>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+
+    <!-- Receive input from requestor. (Note: This maps to operation defined in InboundBatchFileAdapter.wsdl) -->
+    <scope name="ScopeEDI27X">
+      <faultHandlers>
+        <catchAll>
+          <sequence>
+            <assign name="AssignError">
+              <copy>
+                <from>ora:getFaultAsString()</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Error</to>
+              </copy>
+              <copy>
+                <from>ora:getApplicationName()</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeSVCMonitor_SvcMonitor_InputVariable.payload/ns19:application/ns19:name</to>
+              </copy>
+              <copy>
+                <from>ora:getRevision()</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeSVCMonitor_SvcMonitor_InputVariable.payload/ns19:application/ns19:version</to>
+              </copy>
+              <copy>
+                <from>'Error Occured'</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeSVCMonitor_SvcMonitor_InputVariable.payload/ns19:application/ns19:description</to>
+              </copy>
+              <copy>
+                <from>$TrackingId</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeSVCMonitor_SvcMonitor_InputVariable.payload/ns19:statistics/ns19:statistic/ns19:biz-txn-id</to>
+              </copy>
+              <copy>
+                <from>ora:getComponentName()</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeSVCMonitor_SvcMonitor_InputVariable.payload/ns19:statistics/ns19:statistic/ns19:component</to>
+              </copy>
+              <copy>
+                <from>ora:getFlowId()</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeSVCMonitor_SvcMonitor_InputVariable.payload/ns19:statistics/ns19:statistic/ns19:txn-id</to>
+              </copy>
+              <copy>
+                <from>ora:getECID()</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeSVCMonitor_SvcMonitor_InputVariable.payload/ns19:statistics/ns19:statistic/ns19:entity-id</to>
+              </copy>
+              <copy>
+                <from>ora:getFaultAsString()</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeSVCMonitor_SvcMonitor_InputVariable.payload/ns19:statistics/ns19:statistic/ns19:error-msg</to>
+              </copy>
+            </assign>
+            <invoke name="InvokeSVCMonitor" bpelx:invokeAsDetail="no" partnerLink="SVCMonitoring"
+                    portType="ns18:ServiceMonitoringPort" operation="SvcMonitor"
+                    inputVariable="InvokeSVCMonitor_SvcMonitor_InputVariable"/>
+          </sequence>
+        </catchAll>
+      </faultHandlers>
+      <sequence name="Sequence1">
+        <pick name="PickRootFiles" createInstance="yes">
+          <onMessage partnerLink="PollNewFiles" variable="OnMessage_Read_InputVariable" portType="ns16:Read_ptt"
+                     operation="Read" bpelx:name="NehenDirectory">
+            <assign name="AssignNehenDir">
+              <copy>
+                <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name","NehenPollDirectory", "Value", "")</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$RootDirectory</to>
+              </copy>
+              <copy>
+                <from>'Nehen'</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Gateway</to>
+              </copy>
+            </assign>
+          </onMessage>
+          <onMessage partnerLink="PollCACHFiles" variable="OnMessage_Read_InputVariable_CACH" portType="ns17:Read_ptt"
+                     operation="Read" bpelx:name="CachiDirectory">
+            <assign name="AssignCACHIDir">
+              <copy>
+                <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name","CACHIPollDirectory", "Value", "")</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$RootDirectory</to>
+              </copy>
+              <copy>
+                <from>'CACHI'</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Gateway</to>
+              </copy>
+            </assign>
+          </onMessage>
+        </pick>
+        <invoke name="InvokeGetNewFileList" partnerLink="GetNewFilesList" portType="ns1:FileListing_ptt"
+                operation="FileListing" inputVariable="InvokeGetNewFileList_FileListing_InputVariable"
+                outputVariable="InvokeGetNewFileList_FileListing_OutputVariable" bpelx:invokeAsDetail="no">
+          <bpelx:toProperties>
+            <bpelx:toProperty name="jca.file.Directory" variable="RootDirectory"/>
+          </bpelx:toProperties>
+        </invoke>
+        <assign name="AssignInitializeCount">
+          <copy>
+            <from>1</from>
+            <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$FileCount</to>
+          </copy>
+          <copy>
+            <from>$InvokeGetNewFileList_FileListing_OutputVariable.filelist/@size</from>
+            <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$TotalCount</to>
+          </copy>
+        </assign>
+        <while name="WhileForEachFile">
+          <condition>$FileCount&lt;=$TotalCount</condition>
+          <sequence name="Sequence2">
+            <if name="CheckChannelType">
+              <documentation>
+                <![CDATA[FTP]]>
+              </documentation>
+              <condition>contains($InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:directory, 'FTP')</condition>
+              <if name="CheckTrxType">
+                <documentation>
+                  <![CDATA[270]]>
+                </documentation>
+                <condition>contains($InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:directory, '270')</condition>
+                <assign name="Assign270FTPDir">
+                  <copy>
+                    <from>$InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:filename</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Filename</to>
+                  </copy>
+                  <copy>
+                    <from>$InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:directory</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Directory</to>
+                  </copy>
+                  <copy>
+                    <from>xp20:format-dateTime(xp20:current-dateTime(),"[H01][m01][s01][f001]")</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchiveRename</to>
+                  </copy>
+                  <copy>
+                    <from>concat($Filename,'_',$ArchiveRename)</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchFilename</to>
+                  </copy>
+                  <copy>
+                    <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name",concat($Gateway,'FTP270ArchivePath'), "Value", "")</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchDirectory</to>
+                  </copy>
+                  <copy>
+                    <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name",concat($Gateway,'FTP270BusinessArchivePath'), "Value", "")</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$BusinessArchiveDir</to>
+                  </copy>
+                  <copy>
+                    <from>concat(substring(ora:getECID(),1,15),'-',ora:getComponentInstanceId(),'-',ora:getFlowId(),'-',$FileCount)</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$TrackingId</to>
+                  </copy>
+                  <copy>
+                    <from>string('.dat')</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Xtension</to>
+                  </copy>
+                  <copy>
+                    <from>'270'</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$TransactionType</to>
+                  </copy>
+                  <copy>
+                    <from>'FTP'</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Channel</to>
+                  </copy>
+                  <copy>
+                    <from>'NEHEN-FTP'</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ChannelType</to>
+                  </copy>
+                  <copy>
+                    <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name","PayloadType270", "Value", "")</from>
+                    <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$PayLoadType</to>
+                  </copy>
+                </assign>
+                <else>
+                  <documentation>
+                    <![CDATA[276]]>
+                  </documentation>
+                  <assign name="Assign276FTPDir">
+                    <copy>
+                      <from>$InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:filename</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Filename</to>
+                    </copy>
+                    <copy>
+                      <from>$InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:directory</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Directory</to>
+                    </copy>
+                    <copy>
+                      <from>xp20:format-dateTime(xp20:current-dateTime(),"[H01][m01][s01][f001]")</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchiveRename</to>
+                    </copy>
+                    <copy>
+                      <from>concat($Filename,'_',$ArchiveRename)</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchFilename</to>
+                    </copy>
+                    <copy>
+                      <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name",concat($Gateway,'FTP276ArchivePath'), "Value", "")</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchDirectory</to>
+                    </copy>
+                    <copy>
+                      <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name",concat($Gateway,'FTP276BusinessArchivePath'), "Value", "")</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$BusinessArchiveDir</to>
+                    </copy>
+                    <copy>
+                      <from>concat(substring(ora:getECID(),1,15),'-',ora:getComponentInstanceId(),'-',ora:getFlowId(),'-',$FileCount)</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$TrackingId</to>
+                    </copy>
+                    <copy>
+                      <from>string('.dat')</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Xtension</to>
+                    </copy>
+                    <copy>
+                      <from>'276'</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$TransactionType</to>
+                    </copy>
+                    <copy>
+                      <from>'FTP'</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Channel</to>
+                    </copy>
+                    <copy>
+                      <from>'NEHEN-FTP'</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ChannelType</to>
+                    </copy>
+                    <copy>
+                      <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name","PayloadType276", "Value", "")</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$PayLoadType</to>
+                    </copy>
+                  </assign>
+                </else>
+              </if>
+              <else>
+                <documentation>
+                  <![CDATA[FTA]]>
+                </documentation>
+                <sequence name="Sequence3">
+                  <if name="CheckTrxType">
+                    <documentation>
+                      <![CDATA[270]]>
+                    </documentation>
+                    <condition>contains($InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:directory, '270')</condition>
+                    <assign name="Assign270FTADir">
+                      <copy>
+                        <from>$InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:filename</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Filename</to>
+                      </copy>
+                      <copy>
+                        <from>$InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:directory</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Directory</to>
+                      </copy>
+                      <copy>
+                        <from>xp20:format-dateTime(xp20:current-dateTime(),"[H01][m01][s01][f001]")</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchiveRename</to>
+                      </copy>
+                      <copy>
+                        <from>concat($Filename,'_',$ArchiveRename)</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchFilename</to>
+                      </copy>
+                      <copy>
+                        <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name",concat($Gateway,'FTA270ArchivePath'), "Value", "")</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchDirectory</to>
+                      </copy>
+                      <copy>
+                        <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name",concat($Gateway,'FTA270BusinessArchivePath'), "Value", "")</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$BusinessArchiveDir</to>
+                      </copy>
+                      <copy>
+                        <from>concat(substring(ora:getECID(),1,15),'-',ora:getComponentInstanceId(),'-',ora:getFlowId(),'-',$FileCount)</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$TrackingId</to>
+                      </copy>
+                      <copy>
+                        <from>string('.dat')</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Xtension</to>
+                      </copy>
+                      <copy>
+                        <from>'270'</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$TransactionType</to>
+                      </copy>
+                      <copy>
+                        <from>'FTA'</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Channel</to>
+                      </copy>
+                      <copy>
+                        <from>'HTRIO-FTA'</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ChannelType</to>
+                      </copy>
+                      <copy>
+                        <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name","PayloadType270", "Value", "")</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$PayLoadType</to>
+                      </copy>
+                      <copy>
+                        <from>string('.return_xml')</from>
+                        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$FTAMetaFileXtension</to>
+                      </copy>
+                    </assign>
+                    <else>
+                      <documentation>
+                        <![CDATA[276]]>
+                      </documentation>
+                      <assign name="Assign276FTADir">
+                        <copy>
+                          <from>$InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:filename</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Filename</to>
+                        </copy>
+                        <copy>
+                          <from>$InvokeGetNewFileList_FileListing_OutputVariable.filelist/ns1:file[$FileCount]/ns1:directory</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Directory</to>
+                        </copy>
+                        <copy>
+                          <from>xp20:format-dateTime(xp20:current-dateTime(),"[H01][m01][s01][f001]")</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchiveRename</to>
+                        </copy>
+                        <copy>
+                          <from>concat($Filename,'_',$ArchiveRename)</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchFilename</to>
+                        </copy>
+                        <copy>
+                          <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name",concat($Gateway,'FTA276ArchivePath'), "Value", "")</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ArchDirectory</to>
+                        </copy>
+                        <copy>
+                          <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name",concat($Gateway,'FTA276BusinessArchivePath'), "Value", "")</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$BusinessArchiveDir</to>
+                        </copy>
+                        <copy>
+                          <from>concat(substring(ora:getECID(),1,15),'-',ora:getComponentInstanceId(),'-',ora:getFlowId(),'-',$FileCount)</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$TrackingId</to>
+                        </copy>
+                        <copy>
+                          <from>string('.dat')</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Xtension</to>
+                        </copy>
+                        <copy>
+                          <from>'276'</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$TransactionType</to>
+                        </copy>
+                        <copy>
+                          <from>'FTA'</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Channel</to>
+                        </copy>
+                        <copy>
+                          <from>'HTRIO-FTA'</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$ChannelType</to>
+                        </copy>
+                        <copy>
+                          <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name","PayloadType276", "Value", "")</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$PayLoadType</to>
+                        </copy>
+                        <copy>
+                          <from>string('.return_xml')</from>
+                          <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$FTAMetaFileXtension</to>
+                        </copy>
+                      </assign>
+                    </else>
+                  </if>
+                  <invoke name="InvokeReadFTAMF" partnerLink="ReadFTAMetaFile"
+                          portType="ns12:SynchRead_ptt" operation="SynchRead"
+                          inputVariable="InvokeReadFTAMF_SynchRead_InputVariable"
+                          outputVariable="InvokeReadFTAMF_SynchRead_OutputVariable" bpelx:invokeAsDetail="no">
+                    <bpelx:toProperties>
+                      <bpelx:toProperty name="jca.file.FileName">concat($Filename,$FTAMetaFileXtension)</bpelx:toProperty>
+                      <bpelx:toProperty name="jca.file.Directory" variable="Directory"/>
+                    </bpelx:toProperties>
+                  </invoke>
+                  <assign name="AssignAccessId">
+                    <copy>
+                      <from>ora:getContentAsString($InvokeReadFTAMF_SynchRead_OutputVariable.body)</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$AccessId</to>
+                    </copy>
+                    <copy>
+                      <from>substring-before(substring-after($AccessId, 'id="'),'"/&gt;&lt;/transaction-file&gt;')</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$AccessIdNum</to>
+                    </copy>
+                    <copy>
+                      <from>$AccessIdNum</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeDBWrite_insert_InputVariable.EdiBatchFilesCollection/ns8:EdiBatchFiles/ns8:accessId</to>
+                    </copy>
+                    <copy>
+                      <from>$InvokeReadFTAMF_SynchRead_OutputVariable.body</from>
+                      <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeArchFTAMF_Write_InputVariable.body</to>
+                    </copy>
+                  </assign>
+                  <invoke name="InvokeArchFTAMF" partnerLink="ArchFTAMetaFile"
+                          portType="ns15:Write_ptt" operation="Write"
+                          inputVariable="InvokeArchFTAMF_Write_InputVariable" bpelx:invokeAsDetail="no">
+                    <bpelx:toProperties>
+                      <bpelx:toProperty name="jca.file.FileName">concat($Filename,$FTAMetaFileXtension,'_',$ArchiveRename)</bpelx:toProperty>
+                      <bpelx:toProperty name="jca.file.Directory" variable="ArchDirectory"/>
+                    </bpelx:toProperties>
+                  </invoke>
+                </sequence>
+              </else>
+            </if>
+            <invoke name="InvokeFileRead" partnerLink="FileRead" portType="ns2:SynchRead_ptt" operation="SynchRead"
+                    inputVariable="InvokeFileRead_SynchRead_InputVariable"
+                    outputVariable="InvokeFileRead_SynchRead_OutputVariable" bpelx:invokeAsDetail="no">
+              <bpelx:toProperties>
+                <bpelx:toProperty name="jca.file.FileName" variable="Filename"/>
+                <bpelx:toProperty name="jca.file.Directory" variable="Directory"/>
+              </bpelx:toProperties>
+            </invoke>
+            <assign name="AssignToWrite">
+              <copy>
+                <from>$TrackingId</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeDBWrite_insert_InputVariable.EdiBatchFilesCollection/ns8:EdiBatchFiles/ns8:trxId</to>
+              </copy>
+              <copy>
+                <from>concat($ArchDirectory,'/',$ArchFilename)</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeDBWrite_insert_InputVariable.EdiBatchFilesCollection/ns8:EdiBatchFiles/ns8:inFileNm</to>
+              </copy>
+              <copy>
+                <from>$TransactionType</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeDBWrite_insert_InputVariable.EdiBatchFilesCollection/ns8:EdiBatchFiles/ns8:trxType</to>
+              </copy>
+              <copy>
+                <from>$ChannelType</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeDBWrite_insert_InputVariable.EdiBatchFilesCollection/ns8:EdiBatchFiles/ns8:channel</to>
+              </copy>
+              <copy>
+                <from>'RECEIVED'</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeDBWrite_insert_InputVariable.EdiBatchFilesCollection/ns8:EdiBatchFiles/ns8:status</to>
+              </copy>
+              <copy>
+                <from>xp20:current-date()</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeDBWrite_insert_InputVariable.EdiBatchFilesCollection/ns8:EdiBatchFiles/ns8:recvdDt</to>
+              </copy>
+              <copy>
+                <from>xp20:current-date()</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeDBWrite_insert_InputVariable.EdiBatchFilesCollection/ns8:EdiBatchFiles/ns8:lastModifiedDt</to>
+              </copy>
+              <copy>
+                <from>dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name",concat($Gateway,'LastUpdatedby'), "Value", "")</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeDBWrite_insert_InputVariable.EdiBatchFilesCollection/ns8:EdiBatchFiles/ns8:lastUpdBy</to>
+              </copy>
+              <copy>
+                <from>concat($TrackingId,$Xtension)</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$XEFilename</to>
+              </copy>
+              <copy>
+                <from>string('.dat.properties')</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$MetaFileXtension</to>
+              </copy>
+              <copy>
+                <from>concat($TrackingId,$MetaFileXtension)</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$MetaFileName</to>
+              </copy>
+              <copy>
+                <from>concat('XEC_ID=',$TrackingId)</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeMetaFile_Write_InputVariable.body/ns11:MetaFile/ns11:XEC_ID</to>
+              </copy>
+              <copy>
+                <from>concat('PayloadType=',$PayLoadType)</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeMetaFile_Write_InputVariable.body/ns11:MetaFile/ns11:PayloadType</to>
+              </copy>
+              <copy>
+                <from>concat('XEC_ReceiptDateTime=',xp20:format-dateTime(xp20:current-dateTime(),"[Y0001][M01][D01]-[H01][m01][s01].[f001]"))</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeMetaFile_Write_InputVariable.body/ns11:MetaFile/ns11:XEC_ReceiptDateTime</to>
+              </copy>
+              <copy>
+                <from>concat('FNAME=',$Filename)</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeMetaFile_Write_InputVariable.body/ns11:MetaFile/ns11:FName</to>
+              </copy>
+              <copy>
+                <from>concat('OFN=',$XEFilename)</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeMetaFile_Write_InputVariable.body/ns11:MetaFile/ns11:OFN</to>
+              </copy>
+              <copy>
+                <from>concat('Channel=',$Channel)</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeMetaFile_Write_InputVariable.body/ns11:MetaFile/ns11:Channel</to>
+              </copy>
+              <copy>
+                <from>$InvokeFileRead_SynchRead_OutputVariable.opaque</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeFileArchive_Write_InputVariable.opaque</to>
+              </copy>
+              <copy>
+                <from>$InvokeFileRead_SynchRead_OutputVariable.opaque</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeBusinessArchive_Write_InputVariable.opaque</to>
+              </copy>
+              <copy>
+                <from>$InvokeFileRead_SynchRead_OutputVariable.opaque</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeXEInbound_Write_InputVariable.opaque</to>
+              </copy>
+            </assign>
+            <invoke name="InvokeFileArchive" partnerLink="FileArchive" portType="ns3:Write_ptt" operation="Write"
+                    inputVariable="InvokeFileArchive_Write_InputVariable" bpelx:invokeAsDetail="no">
+              <bpelx:toProperties>
+                <bpelx:toProperty name="jca.file.FileName" variable="ArchFilename"/>
+                <bpelx:toProperty name="jca.file.Directory" variable="ArchDirectory"/>
+              </bpelx:toProperties>
+            </invoke>
+            <invoke name="InvokeBusinessArchive" partnerLink="BusinessArchive" portType="ns4:Write_ptt"
+                    operation="Write" inputVariable="InvokeBusinessArchive_Write_InputVariable"
+                    bpelx:invokeAsDetail="no">
+              <bpelx:toProperties>
+                <bpelx:toProperty name="jca.file.FileName" variable="Filename"/>
+                <bpelx:toProperty name="jca.file.Directory" variable="BusinessArchiveDir"/>
+              </bpelx:toProperties>
+            </invoke>
+            <invoke name="InvokeXEInbound" partnerLink="XEInbound" portType="ns5:Write_ptt" operation="Write"
+                    inputVariable="InvokeXEInbound_Write_InputVariable" bpelx:invokeAsDetail="no">
+              <bpelx:toProperties>
+                <bpelx:toProperty name="jca.file.FileName" variable="XEFilename"/>
+                <bpelx:toProperty name="jca.file.Directory">dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name","XEInboundPath", "Value", "")</bpelx:toProperty>
+              </bpelx:toProperties>
+            </invoke>
+            <invoke name="InvokeMetaFile" partnerLink="WriteMetaFile"
+                    portType="ns9:Write_ptt" operation="Write" inputVariable="InvokeMetaFile_Write_InputVariable"
+                    bpelx:invokeAsDetail="no">
+              <bpelx:toProperties>
+                <bpelx:toProperty name="jca.file.FileName" variable="MetaFileName"/>
+                <bpelx:toProperty name="jca.file.Directory">dvm:lookupValue("DVM/IESN_BatchFileAdapter_27X.dvm","Name","XEInboundPath", "Value", "")</bpelx:toProperty>
+              </bpelx:toProperties>
+            </invoke>
+            <invoke name="InvokeDBWrite" partnerLink="WriteToDB" portType="ns7:WriteToDB_ptt"
+                    operation="insert" inputVariable="InvokeDBWrite_insert_InputVariable" bpelx:invokeAsDetail="no"/>
+            <assign name="AssignIncrCount">
+              <copy>
+                <from>$FileCount+1</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$FileCount</to>
+              </copy>
+            </assign>
+          </sequence>
+        </while>
+      </sequence>
+    </scope>
+    <empty name="Out"/>
+  </sequence>
+</process>

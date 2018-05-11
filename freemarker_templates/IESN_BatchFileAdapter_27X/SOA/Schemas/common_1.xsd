@@ -1,0 +1,416 @@
+<?xml version= '1.0' encoding= 'UTF-8' ?>
+<schema targetNamespace="http://hphc.org/schema/common/v2" elementFormDefault="qualified" attributeFormDefault="unqualified"
+     version="2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://hphc.org/schema/common/v2"
+     xmlns:vocabulary="http://hphc.org/schema/vocabulary/v2" xmlns:dataTypes="http://hphc.org/schema/datatypes/v2"
+     xmlns:ns1="http://hphc.org/schema/vocabulary/v2" xmlns:ns2="http://hphc.org/schema/datatypes/v2">
+    <annotation>
+        <documentation>Global elements defined for the HPHC MITS Initiative. Contains Header, Communications, Generic elements, Generic attributes, Quality of Service, Logs and Transaction.</documentation>
+    </annotation>
+    <import namespace="http://hphc.org/schema/vocabulary/v2" schemaLocation="vocabulary_1.xsd"/>
+    <import namespace="http://hphc.org/schema/datatypes/v2" schemaLocation="datatypes_1.xsd"/>
+    <element name="arrayCount" type="integer">
+        <annotation>
+            <documentation>For a request this is the maximum number of results that the requestor can receive.  For the response this is the number of result objects being returned in the message.</documentation>
+        </annotation>
+    </element>
+    <element name="logs">
+        <annotation>
+            <documentation>The root element for a log record.  If this element is present the message is carrying information for recording to a centralized logging service.</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="log" maxOccurs="unbounded">
+                    <annotation>
+                        <documentation>A sequence of log records to be stored.</documentation>
+                    </annotation>
+                    <complexType>
+                        <sequence>
+                            <element name="logElement" minOccurs="0">
+                                <complexType>
+                                    <sequence>
+                                        <annotation>
+                                            <documentation>appElement allows applications to include program specific values in a log message.  The element includes an attribute &quot;name&quot; for storing the name or identifier of the data being sent.  The value of the element represents the data value being sent.</documentation>
+                                        </annotation>
+                                        <element ref="tns:transactionId"/>
+                                        <element ref="tns:transactionName"/>
+                                        <element ref="tns:resultStatus"/>
+                                        <element name="transactionStartTime" type="dateTime">
+                                            <annotation>
+                                                <documentation>Transaction start time</documentation>
+                                            </annotation>
+                                        </element>
+                                        <element name="transactionEndTime" type="dateTime" minOccurs="0">
+                                            <annotation>
+                                                <documentation>Transaction end time</documentation>
+                                            </annotation>
+                                        </element>
+                                        <element ref="tns:transactionFailedReason"/>
+                                        <element ref="tns:qualityCode"/>
+                                        <element name="appCode" type="vocabulary:applicationCodeType">
+                                            <annotation>
+                                                <documentation>Code of the application generating the Log entry</documentation>
+                                            </annotation>
+                                        </element>
+                                    </sequence>
+                                </complexType>
+                            </element>
+                            <element name="appElementArray" minOccurs="0">
+                                <annotation>
+                                    <documentation>List of application elements</documentation>
+                                </annotation>
+                                <complexType>
+                                    <sequence>
+                                        <element name="AppElement" maxOccurs="unbounded">
+                                            <annotation>
+                                                <documentation>appElement allows applications to include program specific values in a log message.  The element includes an attribute &quot;name&quot; for storing the name or identifier of the data being sent.  The value of the element represents the data value being sent.</documentation>
+                                            </annotation>
+                                            <complexType>
+                                                <simpleContent>
+                                                    <extension base="string">
+                                                        <attribute name="NAME" type="string" use="required">
+                                                            <annotation>
+                                                                <documentation>Name of the application element</documentation>
+                                                            </annotation>
+                                                        </attribute>
+                                                    </extension>
+                                                </simpleContent>
+                                            </complexType>
+                                        </element>
+                                    </sequence>
+                                </complexType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="requestHeader">
+        <annotation>
+            <documentation>Request Message Header</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element ref="tns:communications" minOccurs="0"/>
+                <element ref="tns:actionRequested"/>
+                <element ref="tns:accounting" minOccurs="0"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="responseHeader">
+        <annotation>
+            <documentation>Response Message Header</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element ref="tns:extension" minOccurs="0"/>
+                <element ref="tns:serviceVersion" minOccurs="0"/>
+                <element ref="tns:communications" minOccurs="0"/>
+                <element ref="tns:actionRequested"/>
+                <element ref="tns:requestResults"/>
+                <element ref="tns:accounting" minOccurs="0"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="serviceVersion" type="string">
+        <annotation>
+            <documentation>Version of the service. This should include the major and the minor version in the format x.x.x</documentation>
+        </annotation>
+    </element>
+    <element name="actionRequested">
+        <annotation>
+            <documentation>A generic action request node to capture details on requested operation and result count expectations</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element ref="tns:transactionName"/>
+                <element ref="tns:arrayCount" minOccurs="0"/>
+            </sequence>
+            <attribute name="AR" use="required">
+                <annotation>
+                    <documentation>action resuested like Create, Update, Delete etc.</documentation>
+                </annotation>
+                <simpleType>
+                    <restriction base="string">
+                        <enumeration value="INSERT"/>
+                        <enumeration value="UPDATE"/>
+                        <enumeration value="DELETE"/>
+                        <enumeration value="QUERY"/>
+                        <enumeration value="TRANSACT"/>
+                    </restriction>
+                </simpleType>
+            </attribute>
+        </complexType>
+    </element>
+    <element name="requestResults">
+        <annotation>
+            <documentation>The standard prefix element returned as part of a response in a response/reply message pair.  This contains the elements necessary to determine the outcome of the request and how many objects are returned in the result.</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element ref="tns:resultStatus"/>
+                <element name="resultMessage" type="string">
+                    <annotation>
+                        <documentation>The Result Details. This element should carry the error message if there is a service error. This is a business understandable reason</documentation>
+                    </annotation>
+                </element>
+                <element name="resultCodes" minOccurs="0">
+                    <annotation>
+                        <documentation>Service may send multiple result codes - HIPAA, Legacy - NEHEN or HPHC specific and MITS</documentation>
+                    </annotation>
+                    <complexType>
+                        <sequence>
+                            <element name="resultCode" maxOccurs="unbounded">
+                                <complexType>
+                                    <sequence>
+                                        <element ref="tns:code"/>
+                                        <element ref="tns:message" minOccurs="0"/>
+                                    </sequence>
+                                </complexType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+                <element ref="tns:actionToRecover" minOccurs="0"/>
+                <element name="retryInterval" type="long" minOccurs="0">
+                    <annotation>
+                        <documentation>Retry interval in miliseconds</documentation>
+                    </annotation>
+                </element>
+                <element ref="tns:arrayCount" minOccurs="0">
+                    <annotation>
+                        <documentation>For a request this is the maximum number of results that the requestor can receive.  For the response this is the number of result objects being returned in the message</documentation>
+                    </annotation>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="communications">
+        <annotation>
+            <documentation>A generic communication node to capture QoS and Transmission type for auditing</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="qualityOfService" minOccurs="0">
+                    <annotation>
+                        <documentation>Requestor should indicate the Quality of Service here - whether the service is Reliable or Guaranteed</documentation>
+                    </annotation>
+                    <complexType>
+                        <attribute name="QOS">
+                            <simpleType>
+                                <restriction base="string">
+                                    <enumeration value="REL"/>
+                                    <enumeration value="GUAR"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                    </complexType>
+                </element>
+                <element name="transmissionType">
+                    <annotation>
+                        <documentation>Requestor should indicate the Tranmission type here - whether the service is a Pub, Sub or Request-Reply. The value for the Transmission Type should be indicated at the attribute level.</documentation>
+                    </annotation>
+                    <complexType>
+                        <attribute name="TYPE" use="required">
+                            <simpleType>
+                                <restriction base="string">
+                                    <enumeration value="PUB"/>
+                                    <enumeration value="SUB"/>
+                                    <enumeration value="REQREP"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                        <attribute name="TMOUT" type="long"/>
+                    </complexType>
+                </element>
+                <element name="creationTimestamp" minOccurs="0">
+                    <annotation>
+                        <documentation>Timestamp when the communication was created</documentation>
+                    </annotation>
+                    <simpleType>
+                        <restriction base="dateTime"/>
+                    </simpleType>
+                </element>
+                <element name="timeToLive" type="long" minOccurs="0">
+                    <annotation>
+                        <documentation>Time in milliseconds for which the requestor wants the message to live on the ESB</documentation>
+                    </annotation>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="accounting">
+        <annotation>
+            <documentation>A generic accounting node to capture transaction details for reporting and logging needs</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element ref="tns:transactionId">
+                    <annotation>
+                        <documentation>Unique Identifier - Global UID Associated with the transaction</documentation>
+                    </annotation>
+                </element>
+                <element name="transactionSequence" type="string" minOccurs="0">
+                    <annotation>
+                        <documentation>An unique numeric id to capture the sequencing in a transaction</documentation>
+                    </annotation>
+                </element>
+                <element name="requestorCode" type="vocabulary:applicationCodeType">
+                    <annotation>
+                        <documentation>Requestor Code that uniquely identifies the requestor - XRM, CNG</documentation>
+                    </annotation>
+                </element>
+                <element name="serviceName" minOccurs="0">
+                    <annotation>
+                        <documentation>Name of the Service like GetProvider</documentation>
+                    </annotation>
+                    <complexType>
+                        <simpleContent>
+                            <extension base="string">
+                                <attribute name="type" type="string">
+                                    <annotation>
+                                        <documentation>Service type - common, entity, task or data</documentation>
+                                    </annotation>
+                                </attribute>
+                            </extension>
+                        </simpleContent>
+                    </complexType>
+                </element>
+                <element name="transactionDomain" type="string">
+                    <annotation>
+                        <documentation>Domain to which the service belongs to -  Member, Product, Provider etc.</documentation>
+                    </annotation>
+                </element>
+                <element name="transactionScope" minOccurs="0">
+                    <annotation>
+                        <documentation>Atomic – Granular events and service request that can’t be further decomposed e.g. Provider address changed
+							Composite – Aggregation of atomic events or services e.g. Provider changed due to changes in address and affiliation
+							Aggregate – Event or services derived by aggregation across composites e.g. Multiple provider changes in the same event</documentation>
+                    </annotation>
+                    <simpleType>
+                        <restriction base="string">
+                            <enumeration value="Atomic"/>
+                            <enumeration value="Composite"/>
+                            <enumeration value="Aggregate"/>
+                        </restriction>
+                    </simpleType>
+                </element>
+                <element name="timeStamp" type="dateTime" minOccurs="0">
+                    <annotation>
+                        <documentation>Timestamp for the current message transaction.</documentation>
+                    </annotation>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="transactionId">
+        <annotation>
+            <documentation>Unique Identifier - Global UID Associated with the message</documentation>
+        </annotation>
+        <simpleType>
+            <restriction base="string">
+                <minLength value="32"/>
+                <maxLength value="255"/>
+            </restriction>
+        </simpleType>
+    </element>
+    <element name="transactionName" type="string">
+        <annotation>
+            <documentation>Name of the Operation like getproviderbyId</documentation>
+        </annotation>
+    </element>
+    <element name="transactionFailedReason">
+        <annotation>
+            <documentation>Location for Stack trace of the Error Details</documentation>
+        </annotation>
+        <simpleType>
+            <restriction base="string">
+                <maxLength value="255"/>
+            </restriction>
+        </simpleType>
+    </element>
+    <element name="code">
+        <annotation>
+            <documentation>Error Code in case of errors. 00000 for Sucess and refer to error code contract for failure</documentation>
+        </annotation>
+        <complexType>
+            <simpleContent>
+                <extension base="string">
+                    <attribute name="TYPE" type="vocabulary:resultCodeType">
+                        <annotation>
+                            <documentation>Result code type like HIPAA, LEGACY or MITS</documentation>
+                        </annotation>
+                    </attribute>
+                </extension>
+            </simpleContent>
+        </complexType>
+    </element>
+    <element name="message">
+        <annotation>
+            <documentation>Message Codes</documentation>
+        </annotation>
+        <complexType>
+            <simpleContent>
+                <extension base="string">
+                    <attribute name="type" type="tns:messageTypeEnum">
+                        <annotation>
+                            <documentation>Message Type (Warning/Error/Information/Business</documentation>
+                        </annotation>
+                    </attribute>
+                </extension>
+            </simpleContent>
+        </complexType>
+    </element>
+    <simpleType name="messageTypeEnum">
+        <annotation>
+            <documentation>Result Codes like HIPAA, LEGACY (NEHEN) and MITS</documentation>
+        </annotation>
+        <restriction base="string">
+            <enumeration value="WARN"/>
+            <enumeration value="ERROR"/>
+            <enumeration value="INFO"/>
+            <enumeration value="USER"/>
+            <enumeration value="LOG"/>
+        </restriction>
+    </simpleType>
+    <element name="qualityCode">
+        <annotation>
+            <documentation>Log Levels. TRACE, DEBUG, INFO, WARN, ERROR and FATAL</documentation>
+        </annotation>
+        <simpleType>
+            <restriction base="string">
+                <enumeration value="TRACE"/>
+                <enumeration value="DEBUG"/>
+                <enumeration value="INFO"/>
+                <enumeration value="WARN"/>
+                <enumeration value="ERROR"/>
+                <enumeration value="FATAL"/>
+            </restriction>
+        </simpleType>
+    </element>
+    <element name="resultStatus" type="vocabulary:resultStatusType">
+        <annotation>
+            <documentation>resultStatus is an element for holding the result -SUCCESS or FAILUE. The requestor must read this status first and before processing the message payload</documentation>
+        </annotation>
+    </element>
+    <element name="actionToRecover" type="vocabulary:actionToRecoverType">
+        <annotation>
+            <documentation>Standard communication to consumer for recovery from failure; like RETRY, PERMANENT FAILURE, RETRY LATER etc.. The requestor must read this status first and before processing the message payload</documentation>
+        </annotation>
+    </element>
+    <element name="extension">
+        <annotation>
+            <documentation>A class to capture extensibility</documentation>
+        </annotation>
+        <complexType>
+            <annotation>
+                <documentation>To be used for XSD extensibility</documentation>
+            </annotation>
+            <sequence>
+                <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+            <anyAttribute namespace="##any" processContents="lax"/>
+        </complexType>
+    </element>
+</schema>
+<!-- edited with XMLSpy v2012 rel. 2 (x64) (http://www.altova.com) by Jesha Robson (Harvard Pilgrim HealthCare) -->

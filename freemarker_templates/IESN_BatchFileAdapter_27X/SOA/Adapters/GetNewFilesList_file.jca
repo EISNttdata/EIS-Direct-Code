@@ -1,0 +1,12 @@
+<adapter-config name="GetNewFilesList" adapter="file" wsdlLocation="../WSDLs/GetNewFilesList.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory location="eis/HAFileAdapter" UIincludeWildcard="*.270|*.276"/>
+  <endpoint-interaction portType="FileListing_ptt" operation="FileListing">
+    <interaction-spec className="oracle.tip.adapter.file.outbound.FileListInteractionSpec">
+      <property name="Recursive" value="true"/>
+      <property name="LogicalDirectory" value="LIST_DIR"/>
+      <property name="IncludeFiles" value=".*\.270|.*\.276"/>
+    </interaction-spec>
+  </endpoint-interaction>
+
+</adapter-config>

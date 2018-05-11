@@ -1,0 +1,17 @@
+<adapter-config name="PollNewFiles" adapter="file" wsdlLocation="../WSDLs/PollNewFiles.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory location="eis/HAFileAdapter" UIincludeWildcard="*.270|*.276"/>
+  <endpoint-activation portType="Read_ptt" operation="Read">
+    <activation-spec className="oracle.tip.adapter.file.inbound.FileActivationSpec">
+      <property name="DeleteFile" value="false"/>
+      <property name="MinimumAge" value="1"/>
+      <property name="Recursive" value="true"/>
+      <property name="MaxRaiseSize" value="1"/>
+      <property name="PollingFrequency" value="1"/>
+      <property name="LogicalDirectory" value="POLL_DIR"/>
+      <property name="IncludeFiles" value=".*\.270|.*\.276"/>
+      <property name="UseHeaders" value="false"/>
+    </activation-spec>
+  </endpoint-activation>
+
+</adapter-config>

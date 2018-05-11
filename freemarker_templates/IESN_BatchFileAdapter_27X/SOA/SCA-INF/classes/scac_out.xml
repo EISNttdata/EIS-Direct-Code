@@ -1,0 +1,13 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Faults>
+   <Fault>
+      <severity>warning</severity>
+      <loc>/ns:composite/ns:reference[@name='SVCMonitoring']</loc>
+      <line>147</line>
+      <col>84</col>
+      <file>C:\Users\kriti_kanodia\OracleSoa-OutboundNotes\BatchFileProcess\IESN_BatchFileAdapter_27X\SOA\composite.xml</file>
+      <name>C:\Users\kriti_kanodia\OracleSoa-OutboundNotes\BatchFileProcess\IESN_BatchFileAdapter_27X\SOA\composite.xml</name>
+      <fix/>
+      <msg>Failed to Find Binding "SVCMonitoring":"{http://hphc.org/common/wsdl/ServiceMonitor/V1}ServiceMonitoringBindingQSPort" in WSDL Manager</msg>
+   </Fault>
+</Faults>

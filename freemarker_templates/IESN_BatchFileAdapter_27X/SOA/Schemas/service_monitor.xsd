@@ -1,0 +1,259 @@
+<?xml version= '1.0' encoding= 'UTF-8' ?>
+<xsd:schema targetNamespace="http://hphc.org/schema/service-monitor/v1" version="1" elementFormDefault="qualified"
+     attributeFormDefault="unqualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://hphc.org/schema/service-monitor/v1"
+     xmlns:common="http://hphc.org/schema/common/v2">
+    <xsd:import namespace="http://hphc.org/schema/common/v2" schemaLocation="common.xsd"/>
+    <xsd:element name="serviceMonitorRequest" type="tns:serviceMonitorRequestType">
+        <xsd:annotation>
+            <xsd:documentation>Request Element for Get Provider By Id. Valid Id
+                Types are - Provider, ProviderContractParticipant, NPI</xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="serviceMonitorRequestType">
+        <xsd:annotation>
+            <xsd:documentation>Request class for serviceMonitorRequest</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element ref="common:requestHeader" minOccurs="0"/>
+            <xsd:element name="application" type="tns:applicationType"/>
+            <xsd:element name="statistics" type="tns:statisticsType" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+<!-- <application> element 
+-->
+    <xsd:complexType name="applicationType">
+        <xsd:annotation>
+            <xsd:documentation>Contains elements related application which is generating the audit event.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="name" type="tns:str100Type"/>
+            <xsd:element name="version" type="tns:str50Type"/>
+            <xsd:element name="description" type="tns:str4000Type"/>
+            <xsd:element name="type" type="tns:appTypeType"/>
+            <xsd:element name="owner" type="tns:appOwnerType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+<!-- xsd:complexType name="auditPayLoadType">
+        <xsd:annotation>
+            <xsd:documentation>The root element of the audit event.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="application" type="tns:applicationType"/>
+            <xsd:element minOccurs="1" maxOccurs="unbounded" name="statistics" type="tns:activitiesType"/>
+        </xsd:sequence>        
+    </xsd:complexType 
+-->
+
+<!-- <activities> element 
+-->
+    <xsd:complexType name="statisticsType">
+        <xsd:annotation>
+            <xsd:documentation>Contains information relating to the specific audit event (e.g. elapsed time, component, etc.)</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="statistic" type="tns:statisticType" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+<!-- Definition for <activity> individual elements 
+-->
+    <xsd:complexType name="statisticType">
+        <xsd:sequence>
+            <xsd:element name="activity" type="tns:activityTypeType"/>
+            <xsd:element name="biz-txn-id" type="xsd:string"/>
+            <xsd:element name="txn-id" type="xsd:string"/>
+            <xsd:element name="entity-id" type="xsd:string"/>
+            <xsd:element name="consumer" type="xsd:string" nillable="true"/>
+            <xsd:element name="description" type="xsd:string" nillable="true" minOccurs="0"/>
+            <xsd:element name="result" type="tns:resultType" nillable="true"/>
+            <xsd:element name="error-msg" type="xsd:string" nillable="true" minOccurs="0"/>
+            <xsd:element name="elapsed-time" type="tns:longType"/>
+            <xsd:element name="node" type="xsd:string" nillable="true"/>
+            <xsd:element name="component" type="xsd:string" nillable="true"/>
+            <xsd:element name="target" type="xsd:string" nillable="true"/>
+            <xsd:element name="url" type="xsd:string" nillable="true" minOccurs="0"/>
+            <xsd:element name="request" type="xsd:string" nillable="true" minOccurs="0"/>
+            <xsd:element name="response" type="xsd:string" nillable="true" minOccurs="0"/>
+            <xsd:element name="req-len" type="xsd:long" nillable="true" minOccurs="0"/>
+            <xsd:element name="res-len" type="xsd:long" nillable="true" minOccurs="0"/>
+            <xsd:element name="context" type="xsd:string" nillable="true" minOccurs="0"/>
+            <xsd:element name="threshold" type="xsd:int" nillable="true" minOccurs="0"/>
+            <xsd:element name="timestamp" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="user-id" type="xsd:string" nillable="true" minOccurs="0"/>
+            <xsd:element name="session-id" type="xsd:string" nillable="true" minOccurs="0"/>
+            <xsd:element name="success_count" type="xsd:int" nillable="true" minOccurs="0"/>
+            <xsd:element name="failure_count" type="xsd:int" nillable="true" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="appTypeType">
+        <xsd:annotation>
+            <xsd:documentation>Contains the type of the app from which the event is being raised</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="50"/>
+            <xsd:enumeration value="SERVICE"/>
+            <xsd:enumeration value="BATCH"/>
+            <xsd:enumeration value="WEB"/>
+            <xsd:enumeration value="CHANNEL"/>
+            <xsd:enumeration value="SCRIPT"/>
+            <xsd:enumeration value="MEDIATOR"/>
+            <xsd:enumeration value="DATA"/>
+        </xsd:restriction>
+
+<!-- Children of <application> element 
+-->
+    </xsd:simpleType>
+    <xsd:simpleType name="appOwnerType">
+        <xsd:annotation>
+            <xsd:documentation>Contains a semi-colon delimited list of email addresses of the individuals or group(s) responsible for the application.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="200"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="activityTypeType">
+        <xsd:annotation>
+            <xsd:documentation>Contains the type of the app from which the event is being raised</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="50"/>
+            <xsd:enumeration value="LIFECYCLE">
+                <xsd:annotation>
+                    <xsd:documentation>Used to denote a lifecycle event for the application being monitored</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="BEGIN">
+                <xsd:annotation>
+                    <xsd:documentation>Used to denote entry point into an application being monitored</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="BIZ_LAYER">
+                <xsd:annotation>
+                    <xsd:documentation>Used to denote a monitored event from the application&apos;s business layer</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="DB_CALL">
+                <xsd:annotation>
+                    <xsd:documentation>Used to denote a monitored event from the application&apos;s data access layer</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="END">
+                <xsd:annotation>
+                    <xsd:documentation>Used to denote the exit/response of the monitored application</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="WS_CALL_BEGIN">
+                <xsd:annotation>
+                    <xsd:documentation>Specifies that the activity is an outbound request to a web service.  Use this activity, in conjunction with WS_CALL_END, when you want to monitor more granular bits of logic, via the Log4J JMSAppender</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="WS_CALL_END">
+                <xsd:annotation>
+                    <xsd:documentation>Specifies that the activity is an inbound response from a web service.  Use this activity, in conjunction with WS_CALL_BEGIN, when you want to monitor more granular bits of logic, via the Log4J JMSAppender.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="WS_CALL">
+                <xsd:annotation>
+                    <xsd:documentation>Specifies that the monitored method invokes a remote web service.  This activity type is used at the method level, in the Monitored annotation.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="UNSPECIFIED">
+                <xsd:annotation>
+                    <xsd:documentation>Used to denote the activity type is unspecified</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="JMS_PUB">
+                <xsd:annotation>
+                    <xsd:documentation>Used to denote the activity type is JMS</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="SUMMARY">
+                <xsd:annotation>
+                    <xsd:documentation>Used to denote the activity type is SUMMARY</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="EVENT_NOTIF">
+                <xsd:annotation>
+                    <xsd:documentation>Used to denote the activity type is EVENT_NOTIF</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="NOTIF_HINT">
+                <xsd:annotation>
+                    <xsd:documentation>Used to denote the activity type is NOTIF_HINT</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+
+<!-- Children of <activity> element 
+-->
+    </xsd:simpleType>
+    <xsd:simpleType name="resultType">
+        <xsd:annotation>
+            <xsd:documentation>Contains the result for the event</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="50"/>
+            <xsd:enumeration value="SUCCESS"/>
+            <xsd:enumeration value="WARNING"/>
+            <xsd:enumeration value="FAIL"/>
+            <xsd:enumeration value="ERROR"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="targetType">
+        <xsd:annotation>
+            <xsd:documentation>Contains the component (package and class name or package and DB package) for the event</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="urlType">
+        <xsd:annotation>
+            <xsd:documentation>Contains the component (package and class name or package and DB package) for the event</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="500"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="requestType">
+        <xsd:annotation>
+            <xsd:documentation>Contains the component (package and class name or package and DB package) for the event</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="500"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="str50Type">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="50"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="str100Type">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="100"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="str200Type">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="200"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="str500Type">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="500"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="str4000Type">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="4000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="longType">
+        <xsd:restriction base="xsd:integer">
+            <xsd:minInclusive value="-9223372036854775808"/>
+            <xsd:maxInclusive value="9223372036854775807"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>
